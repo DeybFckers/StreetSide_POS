@@ -1,7 +1,9 @@
-import 'package:coffee_pos/core/theme/custom_button.dart';
+import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
+import 'package:coffee_pos/core/widgets/ContainerTab.dart';
 import 'package:coffee_pos/core/widgets/MyDrawer.dart';
-import 'package:coffee_pos/features/products/cart/providers/cart_notifier.dart';
+import 'package:coffee_pos/features/products/Tab/provider/tab_provider.dart';
+import 'package:coffee_pos/features/products/cart/provider/cart_notifier.dart';
 import 'package:coffee_pos/features/products/data/List/product_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,9 +13,16 @@ class ProductScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final screenSize = MediaQuery.of(context).size;
-    final allProducts = ref.watch(productList);
     final cartProducts = ref.watch(cartNotifierProvider);
+    final selectedIndex = ref.watch(selectedTabProvider);
+    final filteredProducts = allProducts.where((product) {
+      if (selectedIndex == 0) return product.category == 'coffee';
+      if (selectedIndex == 1) return product.category == 'food';
+      if (selectedIndex == 2) return product.category == 'drinks';
+      return true;
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +37,7 @@ class ProductScreen extends ConsumerWidget {
       drawer: MyDrawer(),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Column(
             children: [
               Row(
@@ -40,21 +49,31 @@ class ProductScreen extends ConsumerWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.coffee_rounded),
+                            ContainerTab(
+                                onTap: () => ref.read(selectedTabProvider.notifier).state = 0,
+                                icon: Icons.coffee_rounded,
+                                name: 'Coffee',
+                                isSelected: selectedIndex == 0,
+                            ),
                             SizedBox(width: 10),
-                            Text(
-                              'Coffee',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                            ContainerTab(
+                                onTap: () => ref.read(selectedTabProvider.notifier).state = 1,
+                                icon: Icons.fastfood,
+                                name: 'Food',
+                                isSelected: selectedIndex == 1,
+                            ),
+                            SizedBox(width: 10),
+                            ContainerTab(
+                                onTap: () => ref.read(selectedTabProvider.notifier).state = 2,
+                                icon: Icons.local_drink,
+                                name: 'Drinks',
+                                isSelected: selectedIndex == 2,
                             ),
                           ],
                         ),
-                        SizedBox(height: 18),
+                        SizedBox(height: 10),
                         Container(
-                          height: screenSize.height * 0.75,
+                          height: screenSize.height * 0.78,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -62,7 +81,7 @@ class ProductScreen extends ConsumerWidget {
                           ),
                           child: SingleChildScrollView(
                             child: GridView.builder(
-                              itemCount: allProducts.length,
+                              itemCount: filteredProducts.length,
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -72,11 +91,12 @@ class ProductScreen extends ConsumerWidget {
                                 childAspectRatio: 0.8,
                               ),
                               itemBuilder:(context, index){
+                                final product = filteredProducts[index];
                                 return Padding(
                                   padding: const EdgeInsets.only(top:8, left: 8),
                                   child: GestureDetector(
                                     onTap: (){
-                                      ref.read(cartNotifierProvider.notifier).addProduct(allProducts[index]);
+                                      ref.read(cartNotifierProvider.notifier).addProduct(filteredProducts[index]);
                                     },
                                     child: Card(
                                       color: Color.fromARGB(255, 245, 237, 224),
@@ -92,12 +112,12 @@ class ProductScreen extends ConsumerWidget {
                                             ClipRRect(
                                               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                                               child: Image.asset(
-                                                  allProducts[index].imageUrl,
+                                                  product.imageUrl,
                                                   width: 60, height: 60
                                               ),
                                             ),
-                                            Text(allProducts[index].name),
-                                            Text('₱${allProducts[index].price}'),
+                                            Text(product.name),
+                                            Text('₱${product.price}'),
                                           ],
                                         ),
                                       ),
@@ -130,11 +150,11 @@ class ProductScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 18),
+                      SizedBox(height: 10),
                       SingleChildScrollView(
                         child: Container(
                           width: screenSize.width * 0.3,
-                          height: screenSize.height * 0.75,
+                          height: screenSize.height * 0.78,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),

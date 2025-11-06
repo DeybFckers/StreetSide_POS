@@ -38,6 +38,7 @@ dependencies:
   flutter_riverpod: ^3.0.3
   riverpod_annotation: ^3.0.3
   riverpod_generator: ^3.0.3
+  file_picker: ^10.2.0
 
 dev_dependencies:
   flutter_test:

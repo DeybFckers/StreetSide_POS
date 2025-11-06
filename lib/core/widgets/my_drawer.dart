@@ -1,4 +1,4 @@
-import 'package:coffee_pos/features/products/presentation/Products.dart';
+import 'package:coffee_pos/features/products/presentation/products.dart';
 import 'package:coffee_pos/features/auth/presentation/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -1,7 +1,8 @@
+import 'package:coffee_pos/features/products/presentation/add_product.dart';
+import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
-import 'package:coffee_pos/core/widgets/ContainerTab.dart';
-import 'package:coffee_pos/core/widgets/MyDrawer.dart';
+import 'package:coffee_pos/core/widgets/my_drawer.dart';
 import 'package:coffee_pos/features/products/Tab/provider/tab_provider.dart';
 import 'package:coffee_pos/features/products/cart/provider/cart_notifier.dart';
 import 'package:coffee_pos/features/products/data/List/product_list.dart';
@@ -18,20 +19,38 @@ class ProductScreen extends ConsumerWidget {
     final cartProducts = ref.watch(cartNotifierProvider);
     final selectedIndex = ref.watch(selectedTabProvider);
     final filteredProducts = allProducts.where((product) {
-      if (selectedIndex == 0) return product.category == 'coffee';
-      if (selectedIndex == 1) return product.category == 'food';
-      if (selectedIndex == 2) return product.category == 'drinks';
+      if (selectedIndex == 0) return product.category == 'Coffee';
+      if (selectedIndex == 1) return product.category == 'Food';
+      if (selectedIndex == 2) return product.category == 'Drinks';
       return true;
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 78, 52, 46),
-        title: Text('Products',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text('Products',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add),
+              color: Colors.white,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context){
+                    return AddProduct();
+                  }
+                );
+              },
+            )
+          ],
         ),
       ),
       drawer: MyDrawer(),

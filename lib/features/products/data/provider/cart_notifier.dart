@@ -4,24 +4,24 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'cart_notifier.g.dart';
 
-class CartNotifier extends Notifier<Map<Product, int>> {
+class CartNotifier extends Notifier<Map<ProductModel, int>> {
   @override
-  Map<Product, int> build() => {};
+  Map<ProductModel, int> build() => {};
 
-  void addProduct(Product product) {
+  void addProduct(ProductModel product) {
     state = {
       ...state,
       product: (state[product] ?? 0) + 1,
     };
   }
 
-  void removeProduct(Product product) {
-    final newState = Map<Product, int>.from(state);
+  void removeProduct(ProductModel product) {
+    final newState = Map<ProductModel, int>.from(state);
     newState.remove(product);
     state = newState;
   }
 
-  void addQuantity(Product product) {
+  void addQuantity(ProductModel product) {
     if (state.containsKey(product)) {
       state = {
         ...state,
@@ -30,7 +30,7 @@ class CartNotifier extends Notifier<Map<Product, int>> {
     }
   }
 
-  void subtractQuantity(Product product) {
+  void subtractQuantity(ProductModel product) {
     if (state.containsKey(product) && state[product]! > 1) {
       state = {
         ...state,
@@ -44,7 +44,7 @@ class CartNotifier extends Notifier<Map<Product, int>> {
   }
 }
 
-final cartNotifierProvider = NotifierProvider<CartNotifier, Map<Product, int>>(() {
+final cartNotifierProvider = NotifierProvider<CartNotifier, Map<ProductModel, int>>(() {
   return CartNotifier();
 });
 

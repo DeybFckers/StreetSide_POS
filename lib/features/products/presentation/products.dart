@@ -1,13 +1,14 @@
+import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
 import 'package:coffee_pos/features/products/presentation/add_product.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
-import 'package:coffee_pos/features/products/Tab/provider/tab_provider.dart';
-import 'package:coffee_pos/features/products/cart/provider/cart_notifier.dart';
-import 'package:coffee_pos/features/products/data/List/product_list.dart';
+import 'package:coffee_pos/features/products/data/provider/tab_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../data/provider/cart_notifier.dart';
 
 class ProductScreen extends ConsumerWidget {
   const ProductScreen({super.key});
@@ -16,14 +17,21 @@ class ProductScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final screenSize = MediaQuery.of(context).size;
+    final productState = ref.watch(productNotifierProvider);
     final cartProducts = ref.watch(cartNotifierProvider);
     final selectedIndex = ref.watch(selectedTabProvider);
-    final filteredProducts = allProducts.where((product) {
-      if (selectedIndex == 0) return product.category == 'Coffee';
-      if (selectedIndex == 1) return product.category == 'Food';
-      if (selectedIndex == 2) return product.category == 'Drinks';
-      return true;
-    }).toList();
+    final filteredProducts = productState.when(
+      data: (products){
+        return products.where((product){
+          if (selectedIndex == 0) return product.category == 'Coffee';
+          if (selectedIndex == 1) return product.category == 'Food';
+          if (selectedIndex == 2) return product.category == 'Drinks';
+          return true;
+        }).toList();
+      },
+      loading: () => [],
+      error: (_, __) => [],
+    );
 
     return Scaffold(
       appBar: AppBar(

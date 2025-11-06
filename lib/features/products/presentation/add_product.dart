@@ -1,16 +1,21 @@
+import 'package:coffee_pos/features/products/data/models/product_model.dart';
+import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
+import 'package:coffee_pos/features/products/data/repository/product_repository.dart';
 import 'package:coffee_pos/features/products/utils/validator/add_validator.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
-class AddProduct extends StatefulWidget {
+class AddProduct extends ConsumerStatefulWidget {
   const AddProduct({super.key});
 
   @override
-  State<AddProduct> createState() => _AddProductState();
+  ConsumerState<AddProduct> createState() => _AddProductState();
 }
 
-class _AddProductState extends State<AddProduct> {
+class _AddProductState extends ConsumerState<AddProduct> {
 
   final nameController = TextEditingController();
   final priceController = TextEditingController();
@@ -142,9 +147,24 @@ class _AddProductState extends State<AddProduct> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async{
             if(formKey.currentState!.validate()){
+              final product = ProductModel(
+                id: 0,
+                name: nameController.text.trim(),
+                category: selectedCategory!,
+                price: double.parse(priceController.text),
+                imageUrl: pickedFile?.path ?? '',
+              );
 
+              await ref.read(productNotifierProvider.notifier).addProduct(product);
+
+              Get.snackbar(
+                "Success", "Product Added successfully",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green,
+                colorText: Colors.white,
+              );
             }
           },
           child: Text('Confirm',

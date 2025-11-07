@@ -1,12 +1,14 @@
 import 'package:coffee_pos/features/products/data/models/product_model.dart';
 import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
-import 'package:coffee_pos/features/products/data/repository/product_repository.dart';
 import 'package:coffee_pos/features/products/utils/validator/add_validator.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+
 
 class AddProduct extends ConsumerStatefulWidget {
   const AddProduct({super.key});
@@ -23,18 +25,29 @@ class _AddProductState extends ConsumerState<AddProduct> {
   final formKey = GlobalKey<FormState>();
   String? selectedCategory;
   PlatformFile? pickedFile;
+  String? savedImagePath;
 
-  Future selectFile() async{
+  Future<String> saveFilePermanently(PlatformFile file) async {
+    final appStorage = await getApplicationDocumentsDirectory();
+    final newFile = File('${appStorage.path}/${file.name}');
+    return await File(file.path!).copy(newFile.path).then((f) => f.path);
+  }
+
+  Future selectFile() async {
     final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'png'],
-        withData: true
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png'],
     );
+
     if (result == null) return;
 
+    final file = result.files.first;
+    final permanentPath = await saveFilePermanently(file);
+
     setState(() {
-      pickedFile = result.files.first;
-      filenameController.text = pickedFile!.name;
+      pickedFile = file;
+      savedImagePath = permanentPath;
+      filenameController.text = file.name;
     });
   }
 
@@ -154,7 +167,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 name: nameController.text.trim(),
                 category: selectedCategory!,
                 price: double.parse(priceController.text),
-                imageUrl: pickedFile?.path ?? '',
+                imageUrl: savedImagePath ?? '',
               );
 
               await ref.read(productNotifierProvider.notifier).addProduct(product);
@@ -165,6 +178,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 backgroundColor: Colors.green,
                 colorText: Colors.white,
               );
+              Navigator.pop(context);
             }
           },
           child: Text('Confirm',

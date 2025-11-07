@@ -1,14 +1,22 @@
+import 'dart:io';
+import 'package:coffee_pos/features/products/data/models/item_model.dart';
+import 'package:coffee_pos/features/products/data/models/order_model.dart';
+import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
+import 'package:coffee_pos/features/products/data/provider/order_provider.dart';
 import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
+import 'package:coffee_pos/features/products/data/repository/item_repository.dart';
+import 'package:coffee_pos/features/products/data/repository/order_repository.dart';
 import 'package:coffee_pos/features/products/presentation/add_product.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
 import 'package:coffee_pos/features/products/data/provider/tab_provider.dart';
+import 'package:coffee_pos/features/products/utils/validator/checkout_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
-import '../data/provider/cart_notifier.dart';
 
 class ProductScreen extends ConsumerWidget {
   const ProductScreen({super.key});
@@ -32,6 +40,8 @@ class ProductScreen extends ConsumerWidget {
       loading: () => [],
       error: (_, __) => [],
     );
+    final orderRepository = OrderRepository();
+    final itemRepository = ItemRepository();
 
     return Scaffold(
       appBar: AppBar(
@@ -138,8 +148,8 @@ class ProductScreen extends ConsumerWidget {
                                           children: [
                                             ClipRRect(
                                               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                                              child: Image.asset(
-                                                  product.imageUrl,
+                                              child: Image.file(
+                                                  File(product.imageUrl),
                                                   width: 60, height: 60
                                               ),
                                             ),
@@ -162,20 +172,54 @@ class ProductScreen extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.shopping_cart),
-                          SizedBox(width: 10),
-                          Text(
-                            'Cart',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                      GestureDetector(
+                        onTap: () async{
+                          final orders = await orderRepository.getOrder();
+                          final items = await itemRepository.getItem();
+                          if (orders.isEmpty) {
+                            print("No orders yet.");
+                          } else {
+                            for (var order in orders) {
+                              print("Order ID: ${order.id}");
+                              print("Customer Name: ${order.name}");
+                              print("Total Amount: ${order.totalAmount}");
+                              print("Amount Given: ${order.amountGiven}");
+                              print("Change: ${order.change}");
+                              print("Created At: ${order.createdAt}");
+                              print("----------------------");
+                            }
+                          }
+
+                          if (items.isEmpty) {
+                            print("No items in table.");
+                          } else {
+                            for (var item in items) {
+                              print("Item ID: ${item.id}");
+                              print("Order ID: ${item.orderId}");
+                              print("Product ID: ${item.productId}");
+                              print("Quantity: ${item.quantity}");
+                              print("Subtotal: ${item.subTotal}");
+                              print("------------------------");
+                            }
+                          }
+                        },
+                        child: Container(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.shopping_cart),
+                              SizedBox(width: 10),
+                              Text(
+                                'Cart',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       SizedBox(height: 10),
                       SingleChildScrollView(
@@ -209,8 +253,8 @@ class ProductScreen extends ConsumerWidget {
                                                 children: [
                                                   Expanded(
                                                     child: ListTile(
-                                                      leading: Image.asset(
-                                                        product.imageUrl,
+                                                      leading: Image.file(
+                                                        File(product.imageUrl),
                                                         width: 70,
                                                         height: 120,
                                                         fit: BoxFit.cover,
@@ -278,6 +322,7 @@ class ProductScreen extends ConsumerWidget {
                                               final total = ref.read(cartTotalProvider);
                                               final nameController = TextEditingController();
                                               final cashController = TextEditingController();
+                                              final formKey = GlobalKey<FormState>();
                                               double change = 0.0;
                                               return AlertDialog(
                                                 backgroundColor: Colors.brown.withOpacity(0.85),
@@ -287,42 +332,47 @@ class ProductScreen extends ConsumerWidget {
                                                   ),
                                                 ),
                                                 content: StatefulBuilder(
-                                                  builder: (context, setState) => Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      TextField(
-                                                        controller: nameController,
-                                                        decoration: customInputDecoration(
-                                                          'Customer Name',
-                                                          Icons.person
-                                                        )
-                                                      ),
-                                                      SizedBox(height: 10),
-                                                      Text('Total: ₱${total.toStringAsFixed(2)}',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
+                                                  builder: (context, setState) => Form(
+                                                    key: formKey,
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        TextFormField(
+                                                          controller: nameController,
+                                                          decoration: customInputDecoration(
+                                                            'Customer Name',
+                                                            Icons.person
+                                                          ),
+                                                          validator: CheckoutValidator.customerName,
                                                         ),
-                                                      ),
-                                                      SizedBox(height: 10),
-                                                      TextField(
-                                                        controller: cashController,
-                                                        keyboardType: TextInputType.number,
-                                                        decoration: customInputDecoration(
-                                                          'Amount Given',
-                                                          Icons.attach_money
+                                                        SizedBox(height: 10),
+                                                        Text('Total: ₱${total.toStringAsFixed(2)}',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
                                                         ),
-                                                        onChanged: (val) {
-                                                          final cash = double.tryParse(val) ?? 0;
-                                                          setState(() => change = cash - total);
-                                                        },
-                                                      ),
-                                                      SizedBox(height: 10),
-                                                      Text('Change: ₱${change.toStringAsFixed(2)}',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
+                                                        SizedBox(height: 10),
+                                                        TextFormField(
+                                                          controller: cashController,
+                                                          keyboardType: TextInputType.number,
+                                                          decoration: customInputDecoration(
+                                                            'Amount Given',
+                                                            Icons.attach_money
+                                                          ),
+                                                          validator: CheckoutValidator.amountGiven,
+                                                          onChanged: (val) {
+                                                            final cash = double.tryParse(val) ?? 0;
+                                                            setState(() => change = cash - total);
+                                                          },
                                                         ),
-                                                      ),
-                                                    ],
+                                                        SizedBox(height: 10),
+                                                        Text('Change: ₱${change.toStringAsFixed(2)}',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                                 actions: [
@@ -335,9 +385,47 @@ class ProductScreen extends ConsumerWidget {
                                                     ),
                                                   ),
                                                   ElevatedButton(
-                                                    onPressed: () {
-                                                      ref.read(cartNotifierProvider.notifier).clearCart();
-                                                      Navigator.pop(context);
+                                                    onPressed: () async {
+                                                      if(formKey.currentState!.validate()){
+                                                        final cashGiven =  double.tryParse(cashController.text) ?? 0.0;
+
+                                                        if(cashGiven < total){
+                                                          Get.snackbar(
+                                                            "Error", "Insufficient Funds",
+                                                            snackPosition: SnackPosition.BOTTOM,
+                                                            backgroundColor: Colors.red,
+                                                            colorText: Colors.white,
+                                                          );
+                                                          return;
+                                                        }
+
+                                                        final items = cartProducts.entries.map((entry) => ItemModel(
+                                                          productId: entry.key.id,
+                                                          quantity: entry.value,
+                                                          subTotal: entry.key.price * entry.value,
+                                                        )).toList();
+
+                                                        final order = OrderModel(
+                                                            name: nameController.text,
+                                                            totalAmount: total,
+                                                            amountGiven: double.tryParse(cashController.text) ?? 0.0,
+                                                            change: change,
+                                                            createdAt: DateTime.now().toIso8601String()
+                                                        );
+
+                                                        final orderRepository = ref.read(orderRepositoryProvider);
+                                                        await orderRepository.addOrder(order, items);
+                                                        ref.read(cartNotifierProvider.notifier).clearCart();
+
+                                                        Get.snackbar(
+                                                          "Success", "Order Complete",
+                                                          snackPosition: SnackPosition.BOTTOM,
+                                                          backgroundColor: Colors.green,
+                                                          colorText: Colors.white,
+                                                        );
+
+                                                        Navigator.pop(context);
+                                                      }
                                                     },
                                                     child: Text('Confirm',
                                                       style: TextStyle(

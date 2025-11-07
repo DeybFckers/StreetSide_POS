@@ -1,3 +1,4 @@
+import 'package:coffee_pos/core/database/order_table.dart';
 import 'package:coffee_pos/core/database/product_table.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -30,6 +31,27 @@ class StreetSideDatabase{
         ${ProductTable.ProductPrice} REAL NOT NULL,
         ${ProductTable.ProductImage} TEXT
         )
+        ''');
+        db.execute('''
+        CREATE TABLE ${OrderTable.OrderTableName}(
+        ${OrderTable.OrderID} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${OrderTable.OrderCustomer} TEXT,
+        ${OrderTable.OrderTotalAmount} REAL NOT NULL,
+        ${OrderTable.OrderAmountGiven} REAL,
+        ${OrderTable.OrderChange} REAL,
+        ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+        ''');
+        db.execute('''
+        CREATE TABLE ${OrderTable.ItemTableName}(
+        ${OrderTable.ItemID} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${OrderTable.ItemOrder} INTEGER NOT NULL,
+        ${OrderTable.ItemProduct} INTEGER NOT NULL,
+        ${OrderTable.ItemQuantity} INTEGER NOT NULL,
+        ${OrderTable.ItemSubtotal} REAL NOT NULL,
+        FOREIGN KEY (${OrderTable.ItemOrder}) REFERENCES ${OrderTable.OrderTableName}(${OrderTable.OrderID}),
+        FOREIGN KEY (${OrderTable.ItemProduct}) REFERENCES ${ProductTable.ProductTableName}(${ProductTable.ProductID})
+        ) 
         ''');
       }
     );

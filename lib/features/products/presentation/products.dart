@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
@@ -199,6 +200,7 @@ class ProductScreen extends ConsumerWidget {
                               print("Change: ${order.change}");
                               print("Order Type: ${order.orderType}");
                               print("Payment Method: ${order.paymentMethod}");
+                              print("Status: ${order.orderStatus}");
                               print("Created At: ${order.createdAt}");
                               print("----------------------");
                             }
@@ -216,6 +218,13 @@ class ProductScreen extends ConsumerWidget {
                               print("------------------------");
                             }
                           }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListScreen()
+                            ),
+                          );
                         },
                         child: Container(
                           child: Row(

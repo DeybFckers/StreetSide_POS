@@ -7,6 +7,7 @@ class OrderModel {
   final double change;
   final String orderType;
   final String paymentMethod;
+  final String? orderStatus;
   final String createdAt;
 
   OrderModel({
@@ -17,6 +18,7 @@ class OrderModel {
     required this.change,
     required this.orderType,
     required this.paymentMethod,
+    this.orderStatus,
     required this.createdAt,
 
   });
@@ -30,6 +32,7 @@ class OrderModel {
         change: (map['Change'] as num).toDouble(),
         orderType: map['Order_Type'] as String,
         paymentMethod: map['Payment_Method'] as String,
+        orderStatus: map['Status'] as String? ?? 'In Progress',
         createdAt: map['Created_At'] as String,
     );
   }

@@ -24,6 +24,7 @@ class StreetSideDatabase{
       databasePath,
       version: 1,
       onCreate: (db, version){
+        //product table
         db.execute('''
         CREATE TABLE ${ProductTable.ProductTableName}(
         ${ProductTable.ProductID} INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +34,7 @@ class StreetSideDatabase{
         ${ProductTable.ProductImage} TEXT
         )
         ''');
+        //order table
         db.execute('''
         CREATE TABLE ${OrderTable.OrderTableName}(
         ${OrderTable.OrderID} INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,9 +44,11 @@ class StreetSideDatabase{
         ${OrderTable.OrderChange} REAL,
         ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out')) NOT NULL,
         ${OrderTable.OrderPayment} TEXT CHECK(${OrderTable.OrderPayment} IN ('Cash', 'Gcash')) NOT NULL,
+        ${OrderTable.OrderStatus} TEXT NOT NULL CHECK (${OrderTable.OrderStatus} IN ('In Progress', 'Completed')) DEFAULT 'In Progress',
         ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
         )
         ''');
+        // order_item table
         db.execute('''
         CREATE TABLE ${OrderTable.ItemTableName}(
         ${OrderTable.ItemID} INTEGER PRIMARY KEY AUTOINCREMENT,

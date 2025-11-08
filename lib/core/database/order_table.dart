@@ -8,6 +8,7 @@ class OrderTable {
   static const String OrderChange = 'Change';
   static const String OrderType = 'Order_Type';
   static const String OrderPayment = 'Payment_Method';
+  static const String OrderStatus = 'Status';
   static const String OrderCreatedAT = 'Created_At';
 
   //order_item

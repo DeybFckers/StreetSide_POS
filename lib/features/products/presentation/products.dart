@@ -123,8 +123,8 @@ class ProductScreen extends ConsumerWidget {
                               physics: NeverScrollableScrollPhysics(),
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: (screenSize.width ~/ 180).clamp(2, 6),
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 6,
+                                mainAxisSpacing: 6,
                                 childAspectRatio: 0.8,
                               ),
                               itemBuilder:(context, index){

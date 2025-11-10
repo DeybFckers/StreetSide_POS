@@ -557,9 +557,11 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         subTotal: entry.key.price * entry.value,
                                       )).toList();
 
+                                      final discountedTotal = isDiscounted ? total * 0.8 : total;
+
                                       final order = OrderModel(
                                           name: nameController.text,
-                                          totalAmount: total,
+                                          totalAmount: discountedTotal,
                                           amountGiven: selectedPaymentMethod == 'Cash' ? cashGiven : total,
                                           change: selectedPaymentMethod == 'Cash' ? change : 0.0,
                                           paymentMethod: selectedPaymentMethod ?? 'Cash',

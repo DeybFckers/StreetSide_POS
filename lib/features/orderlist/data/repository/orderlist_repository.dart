@@ -1,6 +1,6 @@
 import 'package:coffee_pos/core/database/database_service.dart';
 import 'package:coffee_pos/core/database/order_table.dart';
-import 'package:coffee_pos/features/orderlist/models/orderlist_model.dart';
+import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
 
 class OrderlistRepository {
   final StreetSideDatabase _database = StreetSideDatabase.instance;

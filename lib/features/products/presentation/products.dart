@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:coffee_pos/features/orderlist/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
-import 'package:coffee_pos/features/orderlist/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
@@ -9,7 +9,6 @@ import 'package:coffee_pos/features/products/data/repository/order_repository.da
 import 'package:coffee_pos/features/products/presentation/add_product.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
-import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
 import 'package:coffee_pos/features/products/data/provider/tab_provider.dart';
 import 'package:coffee_pos/features/products/utils/validator/checkout_validator.dart';

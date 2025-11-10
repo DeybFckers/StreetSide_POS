@@ -1,5 +1,5 @@
-import 'package:coffee_pos/features/orderlist/data/orderlist_repository.dart';
-import 'package:coffee_pos/features/orderlist/models/orderlist_model.dart';
+import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
+import 'package:coffee_pos/features/orderlist/data/repository/orderlist_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 

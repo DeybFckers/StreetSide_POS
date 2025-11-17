@@ -20,9 +20,9 @@ class MyDrawer extends StatelessWidget {
   final DrawerControllerX drawerController = Get.put(DrawerControllerX());
 
   final List<Map<String, dynamic>> menuItems = [
+    {"icon": Icons.analytics, "title": "Analytics", "page": () => AnalyticsScreen()},
     {"icon": Icons.coffee, "title": "Products", "page": () => ProductScreen()},
     {"icon": Icons.manage_accounts, "title": "Management", "page": () => ManageScreen()},
-    {"icon": Icons.analytics, "title": "Analytics", "page": () => AnalyticsScreen()},
 
   ];
 

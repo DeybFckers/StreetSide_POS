@@ -30,6 +30,17 @@ class ProductRepository{
     }
   }
 
+  Future<List<ProductModel>> getProductsByCategory(String category) async {
+    final db = await _database.database;
+    final data = await db.query(
+      ProductTable.ProductTableName,
+      where: '${ProductTable.ProductCategory} = ?',
+      whereArgs: [category],
+    );
+    return data.map((e) => ProductModel.fromMap(e)).toList();
+  }
+
+
   Future<void> editName(int id, String Name) async{
     try{
       final db = await _database.database;

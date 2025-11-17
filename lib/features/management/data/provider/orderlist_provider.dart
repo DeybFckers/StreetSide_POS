@@ -1,5 +1,5 @@
-import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
-import 'package:coffee_pos/features/orderlist/data/repository/orderlist_repository.dart';
+import 'package:coffee_pos/features/management/data/models/orderlist_model.dart';
+import 'package:coffee_pos/features/management/data/repository/orderlist_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -11,20 +11,30 @@ class OrderlistNotifier extends StateNotifier<AsyncValue<Map<int, List<orderList
   }
 
   Future<void> fetchOrderList() async {
-    try {
-      final groupedOrders = await _orderListRepository.getGroupedOrders();
-      state = AsyncValue.data(groupedOrders);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    final groupedOrders = await _orderListRepository.getGroupedOrders();
+    state = AsyncValue.data(groupedOrders);
+  }
+
+  Future<void> updateOrderProduct(int orderId, int productId) async {
+    await _orderListRepository.updateOrderProduct(orderId, productId);
+    await fetchOrderList();
+  }
+
+  Future<void> updateOrderQuantity(int orderId, int quantity) async{
+    await _orderListRepository.updateOrderQuantity(orderId, quantity);
+    await fetchOrderList();
+  }
+
+  Future<void> updateOrderSubtotal(int orderId, double subtotal) async{
+    await _orderListRepository.updateOrderSubTotal(orderId, subtotal);
+    await fetchOrderList();
   }
 
   Future<void> updateOrderStatus(int orderId, String status) async {
     try {
-      // 1. Update in DB
+
       await _orderListRepository.updateOrderStatus(orderId, status);
 
-      // 2. Update locally in state
       state = state.whenData((groupedOrders) {
         final updated = Map<int, List<orderListModel>>.from(groupedOrders);
         final orderItems = updated[orderId];
@@ -38,6 +48,16 @@ class OrderlistNotifier extends StateNotifier<AsyncValue<Map<int, List<orderList
     } catch (e) {
       print('Error updating status in provider: $e');
     }
+  }
+
+  Future<void> updateOrderTotal(int orderId, double total) async{
+    await _orderListRepository.updateTotal(orderId, total);
+    await fetchOrderList();
+  }
+
+  Future<void> deleteOrder(int itemId) async{
+    await _orderListRepository.deleteOrderItem(itemId);
+    await fetchOrderList();
   }
 }
 

@@ -46,6 +46,7 @@ class StreetSideDatabase{
         ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out', 'Delivery')) NOT NULL,
         ${OrderTable.OrderPayment} TEXT CHECK(${OrderTable.OrderPayment} IN ('Cash', 'Gcash')) NOT NULL,
         ${OrderTable.OrderStatus} TEXT NOT NULL CHECK (${OrderTable.OrderStatus} IN ('In Progress', 'Completed', 'Refund')) DEFAULT 'In Progress',
+        ${OrderTable.OrderDiscount} INTEGER NOT NULL DEFAULT 0,
         ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
         )
         ''');
@@ -62,6 +63,7 @@ class StreetSideDatabase{
         ) 
         ''');
         //getOrdersWithItems()
+        // db.execute('DROP VIEW IF EXISTS ${OrderTable.ListTableName}');
         db.execute('''
         CREATE VIEW IF NOT EXISTS ${OrderTable.ListTableName} AS
         SELECT 
@@ -73,9 +75,12 @@ class StreetSideDatabase{
           o.${OrderTable.OrderType} as Order_Type,
           o.${OrderTable.OrderPayment} as Payment_Method,
           o.${OrderTable.OrderStatus} as Status,
+          o.${OrderTable.OrderDiscount} as Discounted,
           o.${OrderTable.OrderCreatedAT} as Date,
+          p.${ProductTable.ProductID} as productId,
           p.${ProductTable.ProductName} as Product_Name,
           p.${ProductTable.ProductImage} as Product_Image,
+          i.${OrderTable.ItemID} as itemId,
           i.${OrderTable.ItemQuantity} as Quantity,
           i.${OrderTable.ItemSubtotal} as SubTotal
           FROM ${OrderTable.OrderTableName} o

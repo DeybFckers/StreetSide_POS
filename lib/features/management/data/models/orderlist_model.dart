@@ -1,5 +1,7 @@
 class orderListModel {
   final int? OrderId;
+  final int? ProductId;
+  final int? ItemId;
   final String CustomerName;
   final String ProductName;
   final int Quantity;
@@ -11,10 +13,13 @@ class orderListModel {
   final String PaymentMethod;
   String OrderStatus;
   final String Date;
+  final int Discounted;
   final String ProductImage;
 
   orderListModel ({
     this.OrderId,
+    this.ProductId,
+    this.ItemId,
     required this.CustomerName,
     required this.ProductName,
     required this.Quantity,
@@ -26,12 +31,15 @@ class orderListModel {
     required this.PaymentMethod,
     required this.OrderStatus,
     required this.Date,
+    required this.Discounted,
     required this.ProductImage,
   });
 
   factory orderListModel.fromMap(Map<String, dynamic> map){
     return orderListModel(
-      OrderId: map['orderId'] as int,
+      OrderId: map['orderId'] as int?,
+      ProductId: map['productId'] as int?,
+      ItemId: map['itemId'] as int?,
       CustomerName: map['Customer_Name'] as String,
       ProductName: map['Product_Name'] as String,
       Quantity: map['Quantity'] as int,
@@ -43,6 +51,7 @@ class orderListModel {
       PaymentMethod: map['Payment_Method'] as String,
       OrderStatus: map['Status'] as String,
       Date: map['Date'] as String,
+      Discounted: map['Discounted'] as int,
       ProductImage: map['Product_Image'] as String,
     );
   }

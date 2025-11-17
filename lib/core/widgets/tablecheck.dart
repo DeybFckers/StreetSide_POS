@@ -30,6 +30,7 @@ class TableCheck extends StatelessWidget {
             print("Payment Method: ${order.paymentMethod}");
             print("Status: ${order.orderStatus}");
             print("Created At: ${order.createdAt}");
+            print("Discounted: ${order.discounted}");
             print("----------------------");
           }
         }

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
-import 'package:coffee_pos/features/orderlist/data/provider/orderlist_provider.dart';
+import 'package:coffee_pos/features/management/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
@@ -501,12 +501,14 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                 child: CustomButton(
                                   text: 'Checkout',
                                   onPressed: () async {
-                                    if(formKey.currentState!.validate()) {
+                                    if (formKey.currentState!.validate()) {
+                                      final discountedTotal = isDiscounted ? total * 0.8 : total; // Apply discount here
                                       final cashGiven = double.tryParse(cashController.text) ?? 0.0;
 
-                                      if(cashGiven < total && selectedPaymentMethod == 'Cash'){
+                                      if (selectedPaymentMethod == 'Cash' && cashGiven < discountedTotal) {
                                         Get.snackbar(
-                                          "Error", "Insufficient Funds",
+                                          "Error",
+                                          "Insufficient Funds",
                                           snackPosition: SnackPosition.BOTTOM,
                                           backgroundColor: Colors.red,
                                           colorText: Colors.white,
@@ -514,9 +516,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         return;
                                       }
 
-                                      if(selectedPaymentMethod == null){
+                                      if (selectedPaymentMethod == null) {
                                         Get.snackbar(
-                                          "Error", "Please Select Payment Method",
+                                          "Error",
+                                          "Please Select Payment Method",
                                           snackPosition: SnackPosition.BOTTOM,
                                           backgroundColor: Colors.red,
                                           colorText: Colors.white,
@@ -524,9 +527,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         return;
                                       }
 
-                                      if(selectedOrderType == null){
+                                      if (selectedOrderType == null) {
                                         Get.snackbar(
-                                          "Error", "Please Select Order Type",
+                                          "Error",
+                                          "Please Select Order Type",
                                           snackPosition: SnackPosition.BOTTOM,
                                           backgroundColor: Colors.red,
                                           colorText: Colors.white,
@@ -534,23 +538,24 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         return;
                                       }
 
+                                      // Prepare items for the order
                                       final items = cartProducts.entries.map((entry) => ItemModel(
                                         productId: entry.key.id,
                                         quantity: entry.value,
                                         subTotal: entry.key.price * entry.value,
                                       )).toList();
 
-                                      final discountedTotal = isDiscounted ? total * 0.8 : total;
-
                                       final order = OrderModel(
-                                          name: nameController.text,
-                                          totalAmount: discountedTotal,
-                                          amountGiven: selectedPaymentMethod == 'Cash' ? cashGiven : total,
-                                          change: selectedPaymentMethod == 'Cash' ? change : 0.0,
-                                          paymentMethod: selectedPaymentMethod ?? 'Cash',
-                                          orderType: selectedOrderType ?? 'Dine In',
-                                          createdAt: DateTime.now().toIso8601String()
+                                        name: nameController.text,
+                                        totalAmount: discountedTotal,
+                                        amountGiven: selectedPaymentMethod == 'Cash' ? cashGiven : discountedTotal,
+                                        change: selectedPaymentMethod == 'Cash' ? cashGiven - discountedTotal : 0.0,
+                                        paymentMethod: selectedPaymentMethod ?? 'Cash',
+                                        orderType: selectedOrderType ?? 'Dine In',
+                                        discounted: isDiscounted ? 1 : 0,
+                                        createdAt: DateTime.now().toIso8601String(),
                                       );
+
 
                                       final orderListNotifier = ref.read(orderListNotifierProvider.notifier);
                                       await orderRepository.addOrder(order, items);
@@ -565,7 +570,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       ref.read(managementNotifierProvider.notifier).fetchAll();
 
                                       Get.snackbar(
-                                        "Success", "Order added to list",
+                                        "Success",
+                                        "Order added to list",
                                         snackPosition: SnackPosition.BOTTOM,
                                         backgroundColor: Colors.green,
                                         colorText: Colors.white,

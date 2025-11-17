@@ -1,8 +1,8 @@
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/management/data/provider/product_provider.dart';
 import 'package:coffee_pos/features/management/data/models/product_model.dart';
-import 'package:coffee_pos/features/management/utils/file_helper.dart';
-import 'package:coffee_pos/features/products/utils/validator/add_validator.dart';
+import 'package:coffee_pos/features/management/utils/helper/file_helper.dart';
+import 'package:coffee_pos/features/management/utils/validator/add_validator.dart';
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

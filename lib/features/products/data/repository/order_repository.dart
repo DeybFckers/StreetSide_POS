@@ -17,6 +17,7 @@ class OrderRepository {
         OrderTable.OrderChange: order.change,
         OrderTable.OrderType: order.orderType,
         OrderTable.OrderPayment: order.paymentMethod,
+        OrderTable.OrderDiscount: order.discounted,
         OrderTable.OrderCreatedAT: order.createdAt,
       });
 

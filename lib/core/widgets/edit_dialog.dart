@@ -1,5 +1,6 @@
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:coffee_pos/core/widgets/edit_button.dart';
+import 'package:coffee_pos/features/management/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showEditDialog(
@@ -135,7 +136,7 @@ Future<void> showFileUploadDialog(
       IconData? icon,
     }) async {
   final formKey = GlobalKey<FormState>();
-
+  final screenSize = MediaQuery.of(context).size;
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -148,7 +149,7 @@ Future<void> showFileUploadDialog(
         ),
         insetPadding: const EdgeInsets.symmetric(horizontal: 40),
         content: SizedBox(
-          width: 400, // Set desired width
+          width: screenSize.width * 0.35,
           child: Form(
             key: formKey,
             child: Row(
@@ -194,6 +195,36 @@ Future<void> showFileUploadDialog(
         ],
       );
     },
+  );
+}
+
+Future<ProductModel?> showProductListDialog(
+    BuildContext context, {
+      required String title,
+      required List<ProductModel> products,
+      String? initialValue,
+    }) async {
+  final screenSize = MediaQuery.of(context).size;
+  return showDialog<ProductModel>(
+    context: context,
+    builder: (_) => AlertDialog(
+      backgroundColor: Colors.brown.withOpacity(0.85),
+      title: Text(title, style: TextStyle(color: Colors.white)),
+      content: SizedBox(
+        width: screenSize.width * 0.35,
+        child: ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (_, i) {
+            final p = products[i];
+            return ListTile(
+              title: Text(p.name, style: TextStyle(color: Colors.white)),
+              trailing: Text("₱${p.price}", style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(context, p),
+            );
+          },
+        ),
+      ),
+    ),
   );
 }
 

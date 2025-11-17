@@ -1,7 +1,7 @@
 import 'package:coffee_pos/core/database/database_service.dart';
 import 'package:coffee_pos/core/database/order_table.dart';
 import 'package:coffee_pos/core/database/product_table.dart';
-import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
+import 'package:coffee_pos/features/management/data/models/orderlist_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/management/data/models/product_model.dart';
 

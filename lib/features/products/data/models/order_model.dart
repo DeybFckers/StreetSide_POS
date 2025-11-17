@@ -8,6 +8,7 @@ class OrderModel {
   final String orderType;
   final String paymentMethod;
   final String? orderStatus;
+  final int discounted;
   final String createdAt;
 
   OrderModel({
@@ -19,6 +20,7 @@ class OrderModel {
     required this.orderType,
     required this.paymentMethod,
     this.orderStatus,
+    required this. discounted,
     required this.createdAt,
 
   });
@@ -33,6 +35,7 @@ class OrderModel {
         orderType: map['Order_Type'] as String,
         paymentMethod: map['Payment_Method'] as String,
         orderStatus: map['Status'] as String? ?? 'In Progress',
+        discounted: map['Discounted'] as int,
         createdAt: map['Created_At'] as String,
     );
   }

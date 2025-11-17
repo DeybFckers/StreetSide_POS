@@ -34,6 +34,22 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<ProductModel>>> {
     }
   }
 
+  Future<List<ProductModel>> fetchProductByCategory(String category) async {
+    try {
+      final categoryProduct = await _productRepository.getProductsByCategory(category);
+
+      // update state
+      state = AsyncValue.data(categoryProduct);
+
+      // return result to UI
+      return categoryProduct;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return []; // return empty list to avoid UI errors
+    }
+  }
+
+
   // -----------------------------------------------------------------------------
   // ➕ addProduct(): Adds a product to the repository, then refreshes the list.
   // -----------------------------------------------------------------------------

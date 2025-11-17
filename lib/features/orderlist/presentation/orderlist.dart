@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
-import 'package:coffee_pos/features/orderlist/data/provider/orderlist_provider.dart';
-import 'package:coffee_pos/features/orderlist/data/provider/ordertab_provider.dart';
+import 'package:coffee_pos/features/management/data/provider/orderlist_provider.dart';
+import 'package:coffee_pos/features/orderlist/provider/ordertab_provider.dart';
 import 'package:get/get.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -277,6 +277,21 @@ class ListScreen extends ConsumerWidget {
                                                   ),
                                                 ),
                                                 Text('${firstItem.OrderType}',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Discounted',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[800]
+                                                  ),
+                                                ),
+                                                Text(firstItem.Discounted == 1 ? 'Yes' : 'No',
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ class ContainerTab extends StatelessWidget {
   final String name;
   final bool isSelected;
   final VoidCallback onTap;
-  final String? badge; // new property
+  final String? badge;
 
   const ContainerTab({
     super.key,

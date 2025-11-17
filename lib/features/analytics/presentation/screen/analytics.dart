@@ -46,11 +46,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       drawer: MyDrawer(),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [const Color(0xFFF5F5F5), Colors.grey[100]!],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: Color.fromARGB(255, 245, 237, 224),
         ),
         child: analyticsData.when(
           data: (data) => _buildContent(context, data, selectedPeriod),

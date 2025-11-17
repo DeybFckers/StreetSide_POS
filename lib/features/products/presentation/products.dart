@@ -569,13 +569,15 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       await orderListNotifier.fetchOrderList();
                                       ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                                      Get.snackbar(
-                                        "Success",
-                                        "Order added to list",
-                                        snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor: Colors.green,
-                                        colorText: Colors.white,
-                                      );
+                                      if(context.mounted){
+                                        Get.snackbar(
+                                          "Success",
+                                          "Order added to list",
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          backgroundColor: Colors.green,
+                                          colorText: Colors.white,
+                                        );
+                                      }
                                     }
                                   },
                                 ),

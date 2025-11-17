@@ -179,12 +179,14 @@ Widget buildCustomerTable(BuildContext context, WidgetRef ref, List<OrderModel> 
                     final newChange = newCash - o.totalAmount;
 
                     if(newCash < o.totalAmount){
-                      Get.snackbar(
-                        "Error", "Insufficient Funds",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
+                      if(context.mounted){
+                        Get.snackbar(
+                          "Error", "Insufficient Funds",
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
                       return;
                     }
 
@@ -192,12 +194,14 @@ Widget buildCustomerTable(BuildContext context, WidgetRef ref, List<OrderModel> 
                     ref.read(customerNotifierProvider.notifier).updateCash(o.id!, newCash);
                     ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                    Get.snackbar(
-                      "Success", "Amount Updated!",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                    );
+                    if(context.mounted){
+                      Get.snackbar(
+                        "Success", "Amount Updated!",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white,
+                      );
+                    }
                   },
                 );
               },
@@ -227,12 +231,14 @@ Widget buildCustomerTable(BuildContext context, WidgetRef ref, List<OrderModel> 
                               ref.read(customerNotifierProvider.notifier).deleteOrder(o.id!);
                               ref.read(orderListNotifierProvider.notifier).fetchOrderList();
                               ref.read(managementNotifierProvider.notifier).fetchAll();
-                              Get.snackbar(
-                                "Success", "Product Updated!",
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: Colors.green,
-                                colorText: Colors.white,
-                              );
+                              if(context.mounted){
+                                Get.snackbar(
+                                  "Success", "Product Updated!",
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.green,
+                                  colorText: Colors.white,
+                                );
+                              }
                             }
                           )
                         ],

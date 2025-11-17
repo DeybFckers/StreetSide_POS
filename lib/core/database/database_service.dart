@@ -115,7 +115,7 @@ class StreetSideDatabase{
         ''');
         // View: Monthly sales analytics
         db.execute('''
-        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MontlySalesTableName} AS
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MonthlySalesTableName} AS
         SELECT 
           strftime('%Y-%m', ${OrderTable.OrderCreatedAT}) AS Month,
           SUM(${OrderTable.OrderTotalAmount}) AS Total_Sales,

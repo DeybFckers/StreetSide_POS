@@ -12,14 +12,14 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
     state = await AsyncValue.guard(() async {
       final db = await StreetSideDatabase.instance.database;
 
-      // Determine table name based on period
+      // Corrected typo here
       String tableName;
       switch (period) {
         case 'Weekly':
           tableName = AnalyticsTable.WeeklySalesTableName;
           break;
         case 'Monthly':
-          tableName = AnalyticsTable.MontlySalesTableName;
+          tableName = AnalyticsTable.MonthlySalesTableName;
           break;
         default:
           tableName = AnalyticsTable.DailySalesTableName;
@@ -31,7 +31,7 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
         limit: 7,
         orderBy: period == 'Daily' ? 'Sale_Date DESC' : null,
       );
-      final salesData = sales.reversed.toList();
+      final salesData = sales.reversed.toList(); // keep chronological order
 
       // Totals and averages
       final totalSales = salesData.fold<double>(0.0, (sum, item) {

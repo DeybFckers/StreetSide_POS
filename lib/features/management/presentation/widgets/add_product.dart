@@ -142,13 +142,15 @@ class _AddProductState extends ConsumerState<AddProduct> {
               await ref.read(productNotifierProvider.notifier).fetchProducts();
               ref.read(managementNotifierProvider.notifier).fetchAll();
 
-              Get.snackbar(
-                "Success",
-                "Product Added successfully",
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-              );
+              if(context.mounted){
+                Get.snackbar(
+                  "Success",
+                  "Product Added successfully",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                );
+              }
 
               Navigator.pop(context);
             }

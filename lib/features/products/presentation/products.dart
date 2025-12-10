@@ -55,6 +55,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
           if (selectedIndex == 0) return product.category == 'Coffee';
           if (selectedIndex == 1) return product.category == 'Food';
           if (selectedIndex == 2) return product.category == 'Drinks';
+          if (selectedIndex == 3) return product.category == 'Short Order';
           return true;
         }).toList();
       },
@@ -109,6 +110,13 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                               icon: Icons.local_drink,
                               name: 'Drinks',
                               isSelected: selectedIndex == 2,
+                            ),
+                            SizedBox(width: 10),
+                            ContainerTab(
+                              onTap: () => ref.read(selectedTabProvider.notifier).state = 3,
+                              icon: Icons.food_bank,
+                              name: 'Short Order',
+                              isSelected: selectedIndex == 3,
                             ),
                           ],
                         ),

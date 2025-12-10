@@ -76,7 +76,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 value: selectedCategory,
                 decoration: customInputDecoration('Category', Icons.category),
                 dropdownColor: Colors.brown.withOpacity(0.85),
-                items: ['Coffee', 'Drinks', 'Food']
+                items: ['Coffee', 'Drinks', 'Food', 'Short Order']
                     .map(
                       (category) => DropdownMenuItem(
                     value: category,

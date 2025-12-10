@@ -7,6 +7,7 @@ import 'package:coffee_pos/features/analytics/presentation/widgets/summary_card.
 import 'package:coffee_pos/features/analytics/presentation/widgets/top_products.dart';
 import 'package:coffee_pos/features/analytics/presentation/widgets/category_revenue.dart';
 import 'package:coffee_pos/features/analytics/presentation/widgets/period_selector.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/payment_breakdown.dart'; // Add this
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
@@ -20,7 +21,6 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   @override
   void initState() {
     super.initState();
-    // Load initial data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final period = ref.read(selectedPeriodProvider);
       ref.read(analyticsProvider.notifier).loadAnalytics(period);
@@ -39,8 +39,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         backgroundColor: const Color(0xFF4E342E),
         title: Text(
           'Analytics',
-          style: theme.textTheme.titleLarge
-              ?.copyWith(color: Colors.white),
+          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
       ),
       drawer: MyDrawer(),
@@ -51,7 +50,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         child: analyticsData.when(
           data: (data) => _buildContent(context, data, selectedPeriod),
           loading: () =>
-          const Center(child: CircularProgressIndicator(strokeWidth: 3)),
+              const Center(child: CircularProgressIndicator(strokeWidth: 3)),
           error: (err, stack) => Center(child: Text('Error: $err')),
         ),
       ),
@@ -80,6 +79,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               },
             ),
             const SizedBox(height: 20),
+            
+            // Summary Cards Row
             Row(
               children: [
                 Expanded(
@@ -114,8 +115,21 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               ],
             ),
             const SizedBox(height: 24),
+            
+            // Sales Chart
             SalesChart(salesData: data.salesData, selectedPeriod: period),
             const SizedBox(height: 24),
+            
+            // Payment Breakdown (NEW)
+            PaymentBreakdown(
+              totalCash: data.totalCash,
+              totalGcash: data.totalGcash,
+              paymentData: data.paymentData,
+              selectedPeriod: period,
+            ),
+            const SizedBox(height: 24),
+            
+            // Products and Categories Row
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

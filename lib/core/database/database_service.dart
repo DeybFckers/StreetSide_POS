@@ -30,7 +30,7 @@ class StreetSideDatabase{
         CREATE TABLE ${ProductTable.ProductTableName}(
         ${ProductTable.ProductID} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${ProductTable.ProductName} TEXT,
-        ${ProductTable.ProductCategory} TEXT CHECK (${ProductTable.ProductCategory} IN ('Coffee', 'Food', 'Drinks')) NOT NULL,
+        ${ProductTable.ProductCategory} TEXT CHECK (${ProductTable.ProductCategory} IN ('Coffee', 'Food', 'Drinks', 'Short Order')) NOT NULL,
         ${ProductTable.ProductPrice} REAL NOT NULL,
         ${ProductTable.ProductImage} TEXT
         )
@@ -157,7 +157,42 @@ class StreetSideDatabase{
         GROUP BY p.${ProductTable.ProductCategory}
         ORDER BY Total_Revenue DESC;
         ''');
-
+        // View: Daily payment totals (Cash & Gcash)
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.DailyPaymentTableName} AS
+        SELECT
+          date(${OrderTable.OrderCreatedAT}) AS Sale_Date,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Cash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Cash,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Gcash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Gcash
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY date(${OrderTable.OrderCreatedAT})
+        ORDER BY date(${OrderTable.OrderCreatedAT}) DESC;
+        ''');
+        // View: Weekly payment totals (Cash & Gcash)
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.WeeklyPaymentTableName} AS
+        SELECT
+          strftime('%Y-%W', ${OrderTable.OrderCreatedAT}) AS Week,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Cash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Cash,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Gcash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Gcash
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY strftime('%Y-%W', ${OrderTable.OrderCreatedAT})
+        ORDER BY Week DESC;
+        ''');
+        // View: Monthly payment totals (Cash & Gcash)
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MonthlyPaymentTableName} AS
+        SELECT
+          strftime('%Y-%m', ${OrderTable.OrderCreatedAT}) AS Month,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Cash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Cash,
+          SUM(CASE WHEN ${OrderTable.OrderPayment} = 'Gcash' THEN ${OrderTable.OrderTotalAmount} ELSE 0 END) AS Total_Gcash
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY strftime('%Y-%m', ${OrderTable.OrderCreatedAT})
+        ORDER BY Month DESC;
+        ''');
       }
     );
     return database;

@@ -12,28 +12,45 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
     state = await AsyncValue.guard(() async {
       final db = await StreetSideDatabase.instance.database;
 
-      // Corrected typo here
-      String tableName;
+      // Determine table names based on period
+      String salesTableName;
+      String paymentTableName;
+      String orderByClause;
+      
       switch (period) {
         case 'Weekly':
-          tableName = AnalyticsTable.WeeklySalesTableName;
+          salesTableName = AnalyticsTable.WeeklySalesTableName;
+          paymentTableName = AnalyticsTable.WeeklyPaymentTableName;
+          orderByClause = 'Week DESC';
           break;
         case 'Monthly':
-          tableName = AnalyticsTable.MonthlySalesTableName;
+          salesTableName = AnalyticsTable.MonthlySalesTableName;
+          paymentTableName = AnalyticsTable.MonthlyPaymentTableName;
+          orderByClause = 'Month DESC';
           break;
         default:
-          tableName = AnalyticsTable.DailySalesTableName;
+          salesTableName = AnalyticsTable.DailySalesTableName;
+          paymentTableName = AnalyticsTable.DailyPaymentTableName;
+          orderByClause = 'Sale_Date DESC';
       }
 
       // Fetch sales data
       final sales = await db.query(
-        tableName,
+        salesTableName,
         limit: 7,
-        orderBy: period == 'Daily' ? 'Sale_Date DESC' : null,
+        orderBy: orderByClause,
       );
-      final salesData = sales.reversed.toList(); // keep chronological order
+      final salesData = sales.reversed.toList();
 
-      // Totals and averages
+      // Fetch payment data
+      final payments = await db.query(
+        paymentTableName,
+        limit: 7,
+        orderBy: orderByClause,
+      );
+      final paymentData = payments.reversed.toList();
+
+      // Calculate totals
       final totalSales = salesData.fold<double>(0.0, (sum, item) {
         final sales = item['Total_Sales'];
         return sum + (sales != null ? (sales as num).toDouble() : 0.0);
@@ -45,6 +62,17 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
       });
 
       final avgOrder = totalOrders > 0 ? totalSales / totalOrders : 0.0;
+
+      // Calculate payment totals
+      final totalCash = paymentData.fold<double>(0.0, (sum, item) {
+        final cash = item['Total_Cash'];
+        return sum + (cash != null ? (cash as num).toDouble() : 0.0);
+      });
+
+      final totalGcash = paymentData.fold<double>(0.0, (sum, item) {
+        final gcash = item['Total_Gcash'];
+        return sum + (gcash != null ? (gcash as num).toDouble() : 0.0);
+      });
 
       // Top products
       final topProducts = await db.query(
@@ -63,18 +91,19 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
         salesData: salesData,
         topProducts: topProducts,
         categoryRevenue: categoryRevenue,
+        paymentData: paymentData,
         totalSales: totalSales,
         totalOrders: totalOrders,
         avgOrder: avgOrder,
+        totalCash: totalCash,
+        totalGcash: totalGcash,
       );
     });
   }
 }
 
-// Selected period provider
 final selectedPeriodProvider = StateProvider<String>((ref) => 'Daily');
 
-// Analytics notifier provider
 final analyticsProvider =
-StateNotifierProvider<AnalyticsNotifier, AsyncValue<AnalyticsData>>(
+    StateNotifierProvider<AnalyticsNotifier, AsyncValue<AnalyticsData>>(
         (ref) => AnalyticsNotifier());

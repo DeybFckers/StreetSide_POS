@@ -163,7 +163,7 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               title: "Edit Category",
                               label: "Category",
                               initialValue: p.category,
-                              items: ["Coffee", "Drinks", "Food"],
+                              items: ["Coffee", "Drinks", "Food", "Short Order"],
                               validator: ProductValidator.productCategory,
                             );
 
